@@ -1,13 +1,27 @@
 import {} from 'dotenv/config';
-class ParkingLot {
+import FileSync from './file-sync';
+class ParkingLot extends FileSync {
 
 	constructor () {
+		super('./data/parking.json');
+
         this.MAX_PARKING_SLOTS = parseInt(process.env.SLOTS);
-        if (isNaN(this.MAX_PARKING_SLOTS) || this.MAX_PARKING_SLOTS <= 0) {
+        this._init();
+	}
+	
+	_init () {
+		if (isNaN(this.MAX_PARKING_SLOTS) || this.MAX_PARKING_SLOTS <= 0) {
 			throw new Error('Correct value required to create parking slot');
 		}
-        this.parkingSlots = new Array(this.MAX_PARKING_SLOTS);
-    }
+
+		//Initialize with stored data in case of system failure
+		const parkingData = this.getStoredData();
+		if (parkingData && process.env.CLEAN_START !== "true") {
+			this.parkingSlots = parkingData;
+		} else {
+			this.parkingSlots = new Array(this.MAX_PARKING_SLOTS);
+		}
+	}
 
     _getEmptySlot () {
         return this.parkingSlots.findIndex(slot => !slot);
@@ -22,7 +36,8 @@ class ParkingLot {
     parkCar (carNumber) {
         var slot = this._getEmptySlot();
     	if (slot >= 0) {
-            this.parkingSlots[slot] = carNumber;
+			this.parkingSlots[slot] = carNumber;
+			this.updateFile(this.parkingSlots);
             return {slot};
         } else {
             throw new Error('parking lot is full');
@@ -31,8 +46,9 @@ class ParkingLot {
     
     leaveParking (slot) {
         try {
-            this.parkingSlots[slot] = null;
-            return "success";
+			this.parkingSlots[slot] = null;
+			this.updateFile(this.parkingSlots);
+            return 'success';
         } catch (e) {
             return e;
         }
