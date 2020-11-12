@@ -1,5 +1,8 @@
 import {} from 'dotenv/config';
 import FileSync from './file-sync';
+import Auth from './auth';
+const auth = new Auth();
+
 class ParkingLot extends FileSync {
 
 	constructor () {
@@ -44,14 +47,26 @@ class ParkingLot extends FileSync {
 	  	}
     }
     
-    leaveParking (slot) {
-        try {
-			this.parkingSlots[slot] = null;
-			this.updateFile(this.parkingSlots);
-            return 'success';
-        } catch (e) {
-            return e;
-        }
+	/**
+	 *
+	 * @param {String} slot user's input via API param
+	 * @param {String} token collected from stored cookie
+	 * @description it will return slot id for given car number.
+	 * It throws an error if car number does not matches with decrypted token data.
+	 * It throws an error if car not found.
+	 */
+	leaveParking (slot, token) {
+		if (token && auth.decrypt(token) === this.parkingSlots[slot]) {
+			if(this.parkingSlots[slot]) {
+				this.parkingSlots[slot] = null;
+				this.updateFile(this.parkingSlots);
+				return 'success';
+			} else {
+				throw new Error('slot not found');
+			}
+		} else {
+			throw new Error('not authorized to remove car from slot');
+		}
 	}
 
 	/**
