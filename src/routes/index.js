@@ -4,8 +4,18 @@ import ParkingLot from "../module/parking";
 const parkingLot = new ParkingLot();
 
 router
-  .post('/slot/:id', function(req, res, next) {
-    res.send("response");
+  .delete('/slot/:id', function(req, res, next) {
+    const response = parkingLot.leaveParking(req.params.id);
+    res.send(response);
+  })
+  .post('/park', function(req, res, next) {
+    const response = parkingLot.parkCar(req.body.carNumber);
+    res.send(response);
+  })
+  .get('/details', function(req, res, next) {
+    const response = req.query.number ?
+        parkingLot.getDetailsByCar(req.query.number) : parkingLot.getDetailsBySlot(req.query.slot);
+    res.send(response);
   });
 
 module.exports = router;
