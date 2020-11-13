@@ -4,7 +4,7 @@ import Auth from "../../src/module/auth";
 describe('ParkingLot normal flow', () => {
 
 	process.env.SLOTS = 10;
-	process.env.CLEAN_START = 'false';
+	process.env.CLEAN_START = 'true';
 	const parkingLot = new ParkingLot();
 	const auth = new Auth();
 
@@ -28,22 +28,41 @@ describe('ParkingLot normal flow', () => {
 	});
 
 	test('should return success after removing data from slot', () => {
-		const response = parkingLot.leaveParking(0, auth.encrypt('MH03D7447'));
+		const res = {
+			clearCookie: jest.fn()
+		}
+		const response = parkingLot.leaveParking(0, auth.encrypt('MH03D7447'), res);
 		expect(response).toBe('success');
 	});
 
 });
 
 
-describe('ParkingLot negative flow', () => {
+describe('ParkingLot incoorect environment variables', () => {
 
 	const parkingLot = new ParkingLot();
-	test('should return success after removing data from slot', () => {
+	test('should return error for incorrect environment variables', () => {
 		try {
 			parkingLot.leaveParking(9999);
 		} catch (e) {
 			expect(e.message).toBe('not authorized to remove car from slot');
 		}
+	});
+
+});
+
+describe('ParkingLot negative flow', () => {
+	process.env.SLOTS = 0;
+	process.env.CLEAN_START = 'true';
+	
+	test('should initialize class with given slots', () => {
+		let parkingLot;
+		try {
+			parkingLot = new ParkingLot();
+		} catch (e) {
+			expect(e.message).toBe('Correct value required to create parking slot');
+		}
+		expect(parkingLot).toBe(undefined);
 	});
 
 });

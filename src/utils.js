@@ -16,3 +16,8 @@ export function errorHandler(err, req, res, next) {
 	res.status(err.status || 500);
 	res.send({ error: err.message });
 }
+
+export function responseModifier (req, res, next) {
+	res.header("Content-Type", 'application/json');
+	next();
+}

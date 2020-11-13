@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_ENV=development nodemon ./bin/www --exec babel-node -e js",
-    "start-prod": "cross-env NODE_ENV=development node ./bin/www --exec babel-node -e js",
-    "test": "cross-env NODE_ENV=test jest"
+    "start:dev": "cross-env NODE_ENV=development nodemon ./bin/www --exec babel-node -e js",
+    "start": "cross-env NODE_ENV=development babel-node ./bin/www",
+    "clean-start": "cross-env CLEAN_START=true NODE_ENV=development babel-node ./bin/www",
+    "test": "cross-env NODE_ENV=test jest --coverage"
   },
   "jest": {
     "testEnvironment": "node"

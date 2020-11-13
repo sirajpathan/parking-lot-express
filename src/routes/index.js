@@ -5,7 +5,7 @@ const parkingLot = new ParkingLot();
 
 router
 	.delete('/slot/:id', function (req, res, next) {
-		const response = parkingLot.leaveParking(req.params.id, req.cookies.token);
+		const response = parkingLot.leaveParking(req.params.id, req.cookies.token, res);
 		res.send(response);
 	})
 	.post('/park', function (req, res, next) {

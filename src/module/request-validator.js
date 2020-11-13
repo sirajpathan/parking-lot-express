@@ -47,7 +47,7 @@ class RequestValidator extends Auth {
             if (req.cookies.token) {
                 throw new Error('you have already parked one car');
             }
-            res.cookie('token', this.encrypt(req.body.carNumber, { maxAge: 86400000, httpOnly: true }));
+            res.cookie('token', this.encrypt(req.body.carNumber), { maxAge: 86400000, httpOnly: true });
         }
         if (this._validate(req.connection.remoteAddress)) {
             next();

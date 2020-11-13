@@ -55,11 +55,12 @@ class ParkingLot extends FileSync {
 	 * It throws an error if car number does not matches with decrypted token data.
 	 * It throws an error if car not found.
 	 */
-	leaveParking (slot, token) {
+	leaveParking (slot, token, res) {
 		if (token && auth.decrypt(token) === this.parkingSlots[slot]) {
 			if(this.parkingSlots[slot]) {
 				this.parkingSlots[slot] = null;
 				this.updateFile(this.parkingSlots);
+				res.clearCookie('token');
 				return 'success';
 			} else {
 				throw new Error('slot not found');
